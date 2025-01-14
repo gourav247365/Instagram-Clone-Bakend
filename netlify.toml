@@ -1,8 +1,0 @@
-[build]
-  command = "npm install"
-  publish = "."
-
-[[redirects]]
-  from = "/api/*"
-  to = "/src/server.js"
-  status = 200
