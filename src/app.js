@@ -40,6 +40,10 @@ app.use(
   cookieParser()
 )
 
+server.listen(port,()=>{
+  console.log(`app is listening on port ${port}`); 
+})
+
 io.on('connection', (socket) => {
 
   console.log('A User Connected')
