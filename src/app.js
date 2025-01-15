@@ -40,10 +40,6 @@ app.use(
   cookieParser()
 )
 
-server.listen(4001, () => {
-  console.log("Socket Server listening on port 4001")
-})
-
 io.on('connection', (socket) => {
 
   console.log('A User Connected')
@@ -96,4 +92,4 @@ app.use('/api/v1/messages', messageRouter)
 app.use('/api/v1/comments', commentRouter)
 
 
-export { app }
+export { app,server }
