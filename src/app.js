@@ -7,7 +7,13 @@ import { Server } from 'socket.io'
 const app = express()
 const server = createServer(app)
 const io = new Server(server,
-  { cors: { origin: process.env.SOCKET_CORS_ORIGIN, methods: ["GET", "POST"] } }
+  { 
+    cors: { 
+      origin: process.env.SOCKET_CORS_ORIGIN, 
+      methods: ["GET", "POST"] 
+    },
+    transports: ['websocket', 'polling'] 
+  }
 )
 
 app.use(
