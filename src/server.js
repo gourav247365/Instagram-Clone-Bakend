@@ -17,7 +17,9 @@ const DB_NAME= 'IGC'
       console.log(error);
       throw error
     })
-    
+    server.listen(port,()=>{
+      console.log(`app is listening on port ${port}`); 
+    })
   }catch (error) {
     console.error(error);
     throw error
