@@ -108,10 +108,6 @@ const getCurrentUserPosts = asyncHandler(async (req, res) => {
 
 const publishPost = asyncHandler(async (req, res) => {
   const { caption, location } = req.body
-  // console.log("FILE",req.file);
-
-  // TODO: get video, upload to cloudinary, create video
-
 
   const postFileLocalPath = req.file?.path
 
@@ -150,10 +146,6 @@ const publishPost = asyncHandler(async (req, res) => {
 
 const getPostById = asyncHandler(async (req, res) => {
   const { postId } = req.params
-  //TODO: get video by id
-
-  // console.log(req.cookies);
-
 
   const post = await Post.aggregate([
     {

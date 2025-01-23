@@ -31,8 +31,8 @@ const createNotification = asyncHandler(async (req, res) => {
 })
 
 const deleteNotification= asyncHandler(async(req,res)=> {
+  
   const {id}= req.params
-  console.log(id);
   
   const notification= await Notification.findByIdAndDelete(id)
 
@@ -123,10 +123,9 @@ const updateRequestNotification= asyncHandler(async(req,res)=> {
 })
 
 const deleteRequestNotification= asyncHandler(async(req,res)=> {
-  const {to,type}= req.query
-  console.log(to);
+  const {to}= req.query
   
-  const notification= await Notification.findOneAndDelete({from: req.user._id,to,type })
+  const notification= await Notification.deleteMany({from: req.user._id,to, $or: [{type: 'request'}, {type: 'follow'}]})
 
   if(!notification) {
     throw new ApiError(404,'Notification Does Not Exist')

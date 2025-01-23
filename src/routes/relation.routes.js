@@ -21,5 +21,4 @@ router.route('/accept').patch(acceptFollowRequest)
 router.route('/delete').patch(deleteRequest)
 router.route('/delete-relation').delete(deleteRelation)
 
-
 export default router

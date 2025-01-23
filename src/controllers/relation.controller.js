@@ -7,17 +7,8 @@ import { User } from "../models/user.model.js";
 import { updateDisplayPicture } from "./user.controller.js";
 
 const toggleRelation= asyncHandler((async(req,res)=> {
-  // if(!req.user) {
-  //   throw new ApiError(401, 'Login to Continue')
-  // }
 
   const {userId,isPrivate}= req.body
-  // console.log(userId,isPrivate);
-  
-
-  // const {username}= req.params
-  
-  // const user= await User.findOne({username})
 
   const deleted= await Relation.findOneAndDelete({follower: req.user._id,following: userId})
 
@@ -206,11 +197,10 @@ const deleteRequest= asyncHandler(async(req,res)=> {
 })
 
 const deleteRelation= asyncHandler(async(req,res)=>{
+
   const {following}= req.body
-  console.log(following);
   
   const relation = await Relation.findOneAndDelete({follower: req.user._id,following})
-  console.log(relation);
   
   if(!relation) {
     throw new ApiError(401, 'Relation does Not Exist')

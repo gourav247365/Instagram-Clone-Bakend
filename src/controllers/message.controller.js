@@ -7,7 +7,6 @@ import mongoose from "mongoose";
 const getMessagesByChatId= asyncHandler(async(req,res)=> {
 
   const {chatId}= req.params
-  console.log(chatId);
   
   const {page=1, limit=20}= req.query
 

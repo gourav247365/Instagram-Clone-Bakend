@@ -63,12 +63,12 @@ const getCurrentUserChats = asyncHandler(async (req, res) => {
     {
       $addFields: {
         messages: '$msgs',
-        lastMessage: { $last: '$msgs'}
+        lastMessage: { $last: '$msgs' }
       }
     },
     {
       $match: {
-        messages: { $ne: []}
+        messages: { $ne: [] }
       }
     },
     {
@@ -113,7 +113,7 @@ const getCurrentUserChats = asyncHandler(async (req, res) => {
       }
     },
     {
-      $sort: { lastMessage: -1} 
+      $sort: { lastMessage: -1 }
     }
   ])
 

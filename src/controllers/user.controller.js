@@ -19,7 +19,6 @@ const generateAccessAndRefreshTokens = async (userId) => {
     return { accessToken, refreshToken }
 
   } catch (error) {
-    // console.log(error)
     throw new ApiError(500, 'Something Went Wrong While Generating Access and Refresh tokens')
   }
 }
@@ -30,8 +29,8 @@ const options = {
 }
 
 const registerUser = asyncHandler(async (req, res) => {
+
   const { email, fullname, username, password } = req.body
-  console.log(email, fullname, username, password);
 
   if (!email.trim() || !fullname.trim() || !username.trim() || !password.trim()) {
     throw new ApiError(401, 'All Fields are Required !')
@@ -198,10 +197,6 @@ const editProfile = asyncHandler(async (req, res) => {
 const getCurrentUser = asyncHandler(async (req, res) => {
 
   const user = req.user
-  // console.log('REQ.USER',req.user);
-
-  // const followersCount= await User.find({following: req.user._id}).$size
-  // const followingsCount= await User.find({follower: req.user._id}).$size
 
   if (!user) {
     throw new ApiError(404, 'User Not Found')
@@ -249,9 +244,6 @@ const getUserByUsername = asyncHandler(async (req, res) => {
   if (!tmp) {
     throw new ApiError(404, 'User Not Found')
   }
-
-  console.log(tmp);
-  
 
   if (tmp.isPrivate) {
 
@@ -394,6 +386,31 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
+const searchUsers= asyncHandler(async(req,res)=> {
+
+  const {value}= req.query
+
+  let searchResult
+
+  if(!value) {
+    searchResult= []
+  }
+  else {
+    searchResult= await User.find({ username: { $regex: value} }).select('-password -email -isPrivate -refreshToken -createdAt -updatedAt')
+  }
+
+  console.log(searchResult);
+  
+  return res.status(200)
+  .json(
+    new ApiResponse(
+      200,
+      searchResult,
+      'Search Result Fetched Successfully'
+    )
+  )
+})
+
 export {
   registerUser,
   loginUser,
@@ -404,5 +421,6 @@ export {
   logoutUser,
   getUserByUsername,
   refreshAccessToken,
-  removeDisplayPicture
+  removeDisplayPicture,
+  searchUsers
 }

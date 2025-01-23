@@ -47,12 +47,9 @@ const getLikes= asyncHandler(async(req,res)=> {
 })
 
 const isLiked= asyncHandler(async(req,res)=> {
+  
   const {postId}= req.params 
-//   console.log("POSTID:",postId);
-  
-  const like= await Like.findOne({post: postId, likedBy: req.user._id})
-//   console.log("LIKE:",like);
-  
+  const like= await Like.findOne({post: postId, likedBy: req.user._id})  
   
   return res.status(200)
   .json(
