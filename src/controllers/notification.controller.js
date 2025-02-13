@@ -141,11 +141,31 @@ const deleteRequestNotification= asyncHandler(async(req,res)=> {
   )
 })
 
+const deleteNotificationByFields= asyncHandler(async(req,res)=> {
+  const {post, to, type, }= req.body
+
+  const notification= await Notification.findOneAndDelete({from: req.user?._id,to,type,post})
+
+  if(!notification) {
+    throw new ApiError(404, 'Notification Not Found')
+  }
+
+  return res.status(200)
+  .json(
+    new ApiResponse(
+      200,
+      notification,
+      'Notification Deleted Successfully'
+    )
+  )
+})
+
 
 export {
   createNotification,
   getCurrentUserNotifications,
   updateRequestNotification,
   deleteNotification,
-  deleteRequestNotification
+  deleteRequestNotification,
+  deleteNotificationByFields
 }

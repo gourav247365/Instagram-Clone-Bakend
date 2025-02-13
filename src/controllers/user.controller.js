@@ -92,8 +92,8 @@ const loginUser = asyncHandler(async (req, res) => {
   const loggedInUser = await User.findById(user._id).select('-password -refreshToken')
 
   return res.status(200)
-    .cookie('accessToken', accessToken, {...options,maxAge: 1*24*60*60*1000})
-    .cookie('refreshToken', refreshToken, {...options,maxAge: 10*24*60*60*1000})
+    .cookie('accessToken', accessToken, { ...options, maxAge: 1 * 24 * 60 * 60 * 1000 })
+    .cookie('refreshToken', refreshToken, { ...options, maxAge: 10 * 24 * 60 * 60 * 1000 })
     .json(
       new ApiResponse(
         200,
@@ -150,7 +150,7 @@ const updateDisplayPicture = asyncHandler(async (req, res) => {
     $set: {
       displayPicture: displayPicture.url
     }
-  }, { new: true }).select('-password')
+  }, { new: true }).select('-password -refreshToken')
 
   if (oldDisplayPicture != "https://res.cloudinary.com/dmxjulnzo/image/upload/v1730717700/User_naarwo.png")
 
@@ -160,15 +160,15 @@ const updateDisplayPicture = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        user,
+        { displayPicture: user.displayPicture },
         'Display Picture Updated Successfully'
       )
     )
 
 })
 
-const removeDisplayPicture= asyncHandler(async(req,res)=> {
-  const user= await User.findByIdAndUpdate(
+const removeDisplayPicture = asyncHandler(async (req, res) => {
+  const user = await User.findByIdAndUpdate(
     req.user._id,
     {
       $unset: {
@@ -181,13 +181,13 @@ const removeDisplayPicture= asyncHandler(async(req,res)=> {
   ).select('-password -refreshToken')
 
   return res.status(200)
-  .json(
-    new ApiResponse(
-      200,
-      user,
-      'Dp Removed Sucessfully'
+    .json(
+      new ApiResponse(
+        200,
+        user,
+        'Dp Removed Sucessfully'
+      )
     )
-  )
 })
 
 const editProfile = asyncHandler(async (req, res) => {
@@ -212,28 +212,28 @@ const getCurrentUser = asyncHandler(async (req, res) => {
     )
 })
 
-const getCurrentUserRealtedAccountsCount= asyncHandler(async(req,res)=> {
-  
+const getCurrentUserRealtedAccountsCount = asyncHandler(async (req, res) => {
+
   try {
-    const followersCount= await Relation.find({following: req.user._id}).countDocuments()
-    const followingsCount= await Relation.find({follower: req.user._id}).countDocuments()
-    
+    const followersCount = await Relation.find({ following: req.user._id }).countDocuments()
+    const followingsCount = await Relation.find({ follower: req.user._id }).countDocuments()
+
     return res
-    .status(200)
-    .json(
-      new ApiResponse(
-        200,
-        {
-          followersCount,
-          followingsCount
-        },
-        'Current User Followers and Followings'
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            followersCount,
+            followingsCount
+          },
+          'Current User Followers and Followings'
+        )
       )
-    )
 
   } catch (error) {
     throw new Error(401, error.message || 'Something Went Wrong while Fetching Current User Followers and Followings')
-  }  
+  }
 })
 
 const getUserByUsername = asyncHandler(async (req, res) => {
@@ -249,7 +249,7 @@ const getUserByUsername = asyncHandler(async (req, res) => {
 
     const relation = await Relation.findOne({ follower: req.user._id, following: tmp._id })
 
-    if (!relation || relation.status==='pending') {
+    if (!relation || relation.status === 'pending') {
       return res.status(200)
         .json(
           new ApiResponse(
@@ -258,7 +258,7 @@ const getUserByUsername = asyncHandler(async (req, res) => {
             'User Fetched Successfully'
           )
         )
-    } 
+    }
   }
 
   const user = await User.aggregate([
@@ -284,7 +284,7 @@ const getUserByUsername = asyncHandler(async (req, res) => {
     },
     {
       $addFields: {
-        postsCount: {$size: '$userPosts'},
+        postsCount: { $size: '$userPosts' },
       }
     },
     {
@@ -297,7 +297,7 @@ const getUserByUsername = asyncHandler(async (req, res) => {
     },
     {
       $addFields: {
-        followersCount: {$size: '$followers'}
+        followersCount: { $size: '$followers' }
       }
     },
     {
@@ -310,7 +310,7 @@ const getUserByUsername = asyncHandler(async (req, res) => {
     },
     {
       $addFields: {
-        followingsCount: { $size: '$followings'} 
+        followingsCount: { $size: '$followings' }
       }
     },
     {
@@ -368,8 +368,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .cookie("accessToken", accessToken, {...options,maxAge: 1*24*60*60*1000})
-      .cookie("refreshToken", refreshToken, {...options,maxAge: 10*24*60*60*1000})
+      .cookie("accessToken", accessToken, { ...options, maxAge: 1 * 24 * 60 * 60 * 1000 })
+      .cookie("refreshToken", refreshToken, { ...options, maxAge: 10 * 24 * 60 * 60 * 1000 })
       .json(
         new ApiResponse(
           200,
@@ -378,7 +378,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             refreshToken
           },
           "Access token refreshed"
-        ) 
+        )
       )
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid refresh token")
@@ -386,27 +386,118 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 })
 
-const searchUsers= asyncHandler(async(req,res)=> {
+const searchUsers = asyncHandler(async (req, res) => {
 
-  const {value}= req.query
+  const { value } = req.query
 
   let searchResult
 
-  if(!value) {
-    searchResult= []
+  if (!value) {
+    searchResult = []
   }
   else {
-    searchResult= await User.find({ username: { $regex: value} }).select('-password -email -isPrivate -refreshToken -createdAt -updatedAt')
+    searchResult = await User.find({ username: { $regex: value, $options: 'i' } }).select('-password -email -isPrivate -refreshToken -createdAt -updatedAt')
   }
 
   console.log(searchResult);
-  
+
+  return res.status(200)
+    .json(
+      new ApiResponse(
+        200,
+        searchResult,
+        'Search Result Fetched Successfully'
+      )
+    )
+})
+
+const togglePrivacyStatus = asyncHandler(async (req, res) => {
+
+  const { isPrivate } = req.body
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { isPrivate } },
+    { new: true },
+  )
+
+  return res.status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        'Privacy Status Updated Successfully'
+      )
+    )
+})
+
+const updateUsername = asyncHandler(async (req, res) => {
+  let { username } = req.body
+  username= username.toLowerCase()
+  const user= await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { username } },
+    { new: true }
+  )
+
   return res.status(200)
   .json(
     new ApiResponse(
       200,
-      searchResult,
-      'Search Result Fetched Successfully'
+      {username: user.username},
+      'Username Updated Sccessfully'
+    )
+  )
+})
+
+const updateFullname = asyncHandler(async (req, res) => {
+  const { fullname } = req.body
+  const user= await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { fullname } },
+    { new: true }
+  )
+
+  return res.status(200)
+  .json(
+    new ApiResponse(
+      200,
+      {fullname: user.fullname},
+      'Fullname Updated Sccessfully'
+    )
+  )
+})
+
+const updateBio = asyncHandler(async (req, res) => {
+  const { bio } = req.body
+  const user= await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { bio } },
+    { new: true }
+  )
+
+  return res.status(200)
+  .json(
+    new ApiResponse(
+      200,
+      {bio: user.bio},
+      'Bio Updated Sccessfully'
+    )
+  )
+})
+
+const checkUsernameAvailibility= asyncHandler(async(req,res)=> {
+
+  const {value} = req.query
+  
+  const user= await User.findOne({username: value})
+
+  return res.status(200)
+  .json(
+    new ApiResponse(
+      200,
+      user? false : true,
+      'Username Availibility Status Fetched Successfully'
     )
   )
 })
@@ -422,5 +513,10 @@ export {
   getUserByUsername,
   refreshAccessToken,
   removeDisplayPicture,
-  searchUsers
+  searchUsers,
+  togglePrivacyStatus,
+  updateUsername,
+  updateFullname,
+  updateBio,
+  checkUsernameAvailibility
 }

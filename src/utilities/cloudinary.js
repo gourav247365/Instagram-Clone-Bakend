@@ -31,8 +31,8 @@ const deleteFromCloudinary= async(url)=> {
   // console.log(avatarOldPublicId,typeof avatarOldPublicId);
 
   try {
-    const result = await cloudinary.uploader.destroy(avatarOldPublicId);
-    if (result.result === "ok") {
+    const response = await cloudinary.uploader.destroy(avatarOldPublicId);
+    if (response.result === "ok") {
       console.log("File deleted successfully.");
     } else if (result.result === "not found") {
       console.log("File not found.");

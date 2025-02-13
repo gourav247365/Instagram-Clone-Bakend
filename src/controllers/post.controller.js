@@ -14,6 +14,9 @@ const getExpolorePosts = asyncHandler(async (req, res) => {
       $match: { postedBy:{ $ne: new mongoose.Types.ObjectId(req.user._id) } }
     },
     {
+      $project: {postFile: 1,postedBy: 1}
+    },
+    {
       $lookup: {
         from: 'users',
         localField: 'postedBy',
@@ -21,7 +24,9 @@ const getExpolorePosts = asyncHandler(async (req, res) => {
         as: 'user',
         pipeline: [
           {
-            $project: { isPrivate: 1 }
+            $project: {
+              isPrivate: 1 
+            }
           }
         ]
       }
@@ -35,6 +40,12 @@ const getExpolorePosts = asyncHandler(async (req, res) => {
     },
     {
       $match: { isPrivate: false }
+    },
+    {
+      $project: { 
+        isPrivate: 0,
+        user: 0
+      }
     },
     {
       $sort: { createdAt: -1 } 
@@ -76,6 +87,12 @@ const getCurrentUserPosts = asyncHandler(async (req, res) => {
   const currentUserPosts = await Post.aggregate ([
     {
       $match: { postedBy: new mongoose.Types.ObjectId(req.user?._id) }
+    },
+    {
+      $project: {
+        postFile: 1,
+        createdAt: 1
+      }
     },
     {
       $facet: {
@@ -260,31 +277,21 @@ const deletePost = asyncHandler(async (req, res) => {
 
 const getCurrentUserFollowingPosts = asyncHandler(async (req, res) => {
 
-  const { page = 1, limit = 5, lastSeen } = req.query; // Pagination and lastSeen timestamp
-  const userId = req.user?._id;
+  const { page = 1, limit = 10, lastSeen } = req.query // Pagination and lastSeen timestamp
+  const userId = req.user?._id
 
   const LIMIT = parseInt(limit)
 
-  // Fetch IDs of users that the current user is following
-  const followedUsers = await Relation.find({ follower: userId }, { following: 1, _id: 0 });
-  const followedIds = followedUsers.map(followed => followed.following);
-  followedIds.push(userId);
+  const followedUsers = await Relation.find({ follower: userId }, { following: 1, _id: 0 })
+  const followedIds = followedUsers.map(followed => followed.following)
+  followedIds.push(userId)
   const query = {
     postedBy: { $in: followedIds },
-  };
-
-  if (lastSeen) {
-    query.createdAt = { $lt: new Date(lastSeen) };
   }
 
-  // Fetch posts from the database
-  // const posts = await Post.find(query)
-  //   .sort({ createdAt: -1 }) // Sort by most recent posts
-  //   .limit(limit) // Limit the number of posts
-  //   .populate({
-  //     path: 'postedBy',
-  //     select: 'username displayPicture',
-  //   });
+  if (lastSeen) {
+    query.createdAt = { $lt: new Date(lastSeen) }
+  }
 
   const posts = await Post.aggregate([
     { $match: query },
@@ -313,11 +320,11 @@ const getCurrentUserFollowingPosts = asyncHandler(async (req, res) => {
   // }
 
   // Check if there are more posts available for infinite scroll
-  const nextLastSeen = posts[posts.length - 1].createdAt; // Get the timestamp of the last post
+  const nextLastSeen = posts[posts.length - 1]?.createdAt // Get the timestamp of the last post
   const hasMore = await Post.exists({
     postedBy: { $in: followedIds },
     createdAt: { $lt: nextLastSeen },
-  });
+  })
 
   // Return the response
   return res.status(200).json(
@@ -330,7 +337,7 @@ const getCurrentUserFollowingPosts = asyncHandler(async (req, res) => {
       },
       'Following posts fetched successfully.'
     )
-  );
+  )
 })
 
 const getPostsByUserId = asyncHandler(async (req, res) => {

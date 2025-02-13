@@ -33,7 +33,8 @@ const userSchema= new Schema({
     default: 'https://res.cloudinary.com/dmxjulnzo/image/upload/v1730717700/User_naarwo.png'
   },
   bio: {
-    type: String
+    type: String,
+    default: ''
   },
   isPrivate: {
     type: Boolean,

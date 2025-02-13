@@ -9,11 +9,20 @@ const toggleLike= asyncHandler(async(req,res)=> {
   const deletedLike= await Like.findOneAndDelete({post: postId, likedBy: req.user._id})
   
   if(!deletedLike) {
-    await Like.create(
+    const like= await Like.create(
       {
         post: postId,
         likedBy: req.user._id
       }
+    )
+
+    return res.status(200)
+    .json(
+      new ApiResponse(
+        200,
+        like,
+        'Like Created Successfully'
+      )
     )
   }
 
@@ -21,8 +30,8 @@ const toggleLike= asyncHandler(async(req,res)=> {
   .json(
     new ApiResponse(
       200,
-      {},
-      'Like Toggled Successfully'
+      deletedLike,
+      'Like Removed Successfully'
     )
   )
 })
