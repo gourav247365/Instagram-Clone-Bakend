@@ -35,15 +35,14 @@ app.use(
 app.use(
   cookieParser()
 )
-
 const server = createServer(app)
+
 const io = new Server(server,
   { 
     cors: { 
       origin: process.env.CORS_ORIGIN, 
       methods: ["GET", "POST"] 
     },
-    transports: ['websocket', 'polling'] 
   }
 )
 
@@ -57,15 +56,19 @@ io.on('connection', (socket) => {
   })
 
   socket.on('message', (data) => {
+    console.log(data);
+    
     socket.to(data.chatId).emit('getMessage', data)
   })
 
   socket.on('typing', (data) => {
+    console.log(data);
+    
     socket.to(data.chatId).emit('getTyping', data)
   })
 
   socket.on('deleteMessage', (data) => {
-    socket.to(data.chatId).emit('getDeleteMessage', (data))
+    socket.to(data.chatId).emit('getDeleteMessage', data)
   })
 
 })

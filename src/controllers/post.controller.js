@@ -277,7 +277,8 @@ const deletePost = asyncHandler(async (req, res) => {
 
 const getCurrentUserFollowingPosts = asyncHandler(async (req, res) => {
 
-  const { page = 1, limit = 10, lastSeen } = req.query // Pagination and lastSeen timestamp
+  const { page = 1, limit = 10, lastSeen } = req.query 
+  
   const userId = req.user?._id
 
   const LIMIT = parseInt(limit)
@@ -313,27 +314,19 @@ const getCurrentUserFollowingPosts = asyncHandler(async (req, res) => {
     { $limit: LIMIT }
   ])
 
-  // if (!posts || posts.length === 0) {
-  //   return res.status(200).json(
-  //     new ApiResponse(200, [], 'No posts found for following users.')
-  //   );
-  // }
-
-  // Check if there are more posts available for infinite scroll
   const nextLastSeen = posts[posts.length - 1]?.createdAt // Get the timestamp of the last post
   const hasMore = await Post.exists({
     postedBy: { $in: followedIds },
     createdAt: { $lt: nextLastSeen },
   })
 
-  // Return the response
   return res.status(200).json(
     new ApiResponse(
       200,
       {
         docs: posts,
-        hasMore, // Indicates if there are more posts available
-        nextLastSeen, // Use this in the next request to fetch subsequent posts
+        hasMore, 
+        nextLastSeen, 
       },
       'Following posts fetched successfully.'
     )
@@ -372,10 +365,6 @@ const getPostsByUserId = asyncHandler(async (req, res) => {
       )
     )
 })
-
-// const togglePublishStatus = asyncHandler(async (req, res) => {
-//   const { videoId } = req.params
-// })
 
 export {
   getExpolorePosts,
