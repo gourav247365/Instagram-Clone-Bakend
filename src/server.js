@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
-import { app,server } from './app.js'
+import { server as app } from './app.js'
 
 dotenv.config({
   path: "./.env"
@@ -13,11 +13,11 @@ const DB_NAME= 'IGC'
 ;(async()=>{
   try {
     await mongoose.connect(`${process.env.MONGODB_URL}/${DB_NAME}`)
-    server.on("error",(error)=>{
+    app.on("error",(error)=>{
       console.log(error);
       throw error
     })
-    server.listen(port,()=>{
+    app.listen(port,()=>{
       console.log(`app is listening on port ${port}`); 
     })
   }catch (error) {
