@@ -35,14 +35,15 @@ app.use(
 app.use(
   cookieParser()
 )
-const server = createServer(app)
 
+const server = createServer(app)
 const io = new Server(server,
   { 
     cors: { 
       origin: process.env.CORS_ORIGIN, 
       methods: ["GET", "POST"] 
     },
+    transports: ['websocket', 'polling'] 
   }
 )
 
@@ -102,4 +103,4 @@ app.use('/api/v1/messages', messageRouter)
 app.use('/api/v1/comments', commentRouter)
 
 
-export { app,server }
+export { server }
