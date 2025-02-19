@@ -91,7 +91,8 @@ const getCurrentUserPosts = asyncHandler(async (req, res) => {
     {
       $project: {
         postFile: 1,
-        createdAt: 1
+        createdAt: 1,
+        postedBy: 1
       }
     },
     {
@@ -348,6 +349,13 @@ const getPostsByUserId = asyncHandler(async (req, res) => {
   const agg = [
     {
       $match: query
+    },
+    {
+      $project: {
+        postedBy: 1,
+        postFile: 1,
+        createdAt: 1
+      }
     },
     {
       $sort: { createdAt: -1 }
