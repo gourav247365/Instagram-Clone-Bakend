@@ -16,8 +16,13 @@ This is the **backend** of an Instagram Clone built using **Node.js** and **Mong
 - Express.js
 - MongoDB & Mongoose
 - Socket.io (for real-time communication)
-- Cloudinary (for image uploads)
+- multer and Cloudinary (for image uploads management)
 - JWT (for authentication)
-- bcrypt.js (for password hashing)
+- bcryptjs (for password hashing)
+- mongoose-aggregate-paginate-v2 (for pagination, infinite scrolling)
 
-## 📂 Folder Structure
+## 📷 preview 
+![Video](https://res.cloudinary.com/dmxjulnzo/video/upload/v1740159436/dkkt6iwxbjpi3mnieoze.mp4)
+
+Also checkout Frontend part made with React Js 
+[Visit Instagram Clone Frontend Github Repository](https://github.com/gourav247365/Instagram-Clone-Frontend)
