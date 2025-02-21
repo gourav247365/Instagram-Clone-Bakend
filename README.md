@@ -22,7 +22,7 @@ This is the **backend** of an Instagram Clone built using **Node.js** and **Mong
 - mongoose-aggregate-paginate-v2 (for pagination, infinite scrolling)
 
 ## 📷 preview 
-<video src='./project_preview/preview.mp4'  controls width='600'></video>
+![demo](./project_preview//preview.gif)
 
 
 Also checkout Frontend part made with React Js 
